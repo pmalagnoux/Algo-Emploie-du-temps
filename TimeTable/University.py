@@ -25,8 +25,8 @@ class University:
                 self.students.append(Science())
 
         self.courses = self.studentInCourse()
-        self.timetable = Timetable(self.students)
-
+        self.timetable = Timetable(self.students, University.classrooms)
+        self.timetable.show()
     def studentInCourse(self):
         courses = {course: 0 for course in Student.courses}
         for student in self.students:

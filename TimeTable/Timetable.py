@@ -1,12 +1,15 @@
 import numpy as np
 from Student import Student
-class Timetable:
-    day = 5
 
-    def __init__(self, students):
-        self.week = [{i: [] for i in [8, 10, 14, 16]} for j in range(Timetable.day)]
+class Timetable:
+    day = 3
+
+    def __init__(self, students, classrooms):
+        self.classrooms = classrooms
+        self.week = [{i: {salle: None for salle in self.classrooms} for i in [8, 10, 14, 16]} for j in range(Timetable.day)]
         self.students = students
         self.graphCourses()
+
     def show(self):
         l1 = ""
         l2 = ""
@@ -33,4 +36,4 @@ class Timetable:
                     self.graph[listCourse.index(student.courses[i])] [listCourse.index(student.courses[j])] += 1
                     self.graph[listCourse.index(student.courses[j])] [listCourse.index(student.courses[i])] += 1
         np.fill_diagonal(self.graph, 0)
-        print(self.graph)
+        print(np.array(self.graph > 0, dtype=int))
