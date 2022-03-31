@@ -36,4 +36,5 @@ class Timetable:
                     self.graph[listCourse.index(student.courses[i])] [listCourse.index(student.courses[j])] += 1
                     self.graph[listCourse.index(student.courses[j])] [listCourse.index(student.courses[i])] += 1
         np.fill_diagonal(self.graph, 0)
-        print(np.array(self.graph > 0, dtype=int))
+
+        print(self.graph)#print(np.array(self.graph > 0, dtype=int))
