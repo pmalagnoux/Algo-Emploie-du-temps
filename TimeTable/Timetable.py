@@ -45,7 +45,7 @@ class Timetable:
                 heure = random.choice(list(self.week[i].keys()))
                 salle = random.choice(list(self.week[i][heure].keys()))
                 if self.week[i][heure][salle] is None:
-                    self.week[i][heure][salle] = cours.course
+                    self.week[i][heure][salle] = cours
                     return
         else:
             print("Trop de cours par rapport à l'edt")

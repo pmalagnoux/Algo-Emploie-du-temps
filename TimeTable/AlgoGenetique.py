@@ -1,6 +1,5 @@
 import random
-
-import numpy as np
+from operator import itemgetter
 from Timetable import Timetable
 from University import University
 from Student import Student
@@ -9,17 +8,18 @@ class AlgoGenetique:
 
     def __init__(self, population, tReproduction, tMutation, universite):
         self.universite = universite # contient les données du problème
-
+        self.taille = population
         self.population = []
+        self.nbEstimation = 0
         self.tR = tReproduction
         self.tM = tMutation
         self.creerPopulationInitiale() #On initialise la population initiale
-        self.best = None
-        self.nbEstimation = 0
+        self.best = (None, None)
+
 
     def creerPopulationInitiale(self):
-        for i in range(len(self.population)):
-            self.population.append((Timetable(University.classrooms, self.universite.ListeCours), 0))
+        for i in range(self.taille):
+            self.population.append([Timetable(University.classrooms, self.universite.ListeCours), 0])
             self.population[i][0].creerRandomEmploieDuTemps()
             self.population[i][1] = self.estimerSolution(self.population[i][0])
 
@@ -88,25 +88,78 @@ class AlgoGenetique:
 
 
     def mutation(self, solution):
-        pass
+        j1, j2 = random.sample(range(Timetable.day), 2)
+
+        h1 = random.choice(list(solution.week[j1]))
+        h2 = random.choice(list(solution.week[j2]))
+
+        s1 = random.choice(list(solution.week[j1][h1]))
+        s2 = random.choice(list(solution.week[j2][h2]))
+
+        ctemp = solution.week[j2][h2][s2]
+        solution.week[j2][h2][s2] = solution.week[j1][h1][s1]
+        solution.week[j1][h1][s1] = ctemp
+
+        return [solution, self.estimerSolution(solution)]
+
+
 
     def reproduction(self, parent1, parent2):
-        pass
+        # Faire la reproduction plutot avec la ListeCours et choisir parmis les 2 parents
+        # à laquelle position on le met si il y a un cours à un des endroits chez l'enfant
+        # on le met a la position de l'autre parent
+        enfant1 = Timetable(University.classrooms, self.universite.ListeCours)
+        enfant2 = Timetable(University.classrooms, self.universite.ListeCours)
+        for i in range(len(parent1.week)):
+            for heure in parent1.week[i].keys():
+                for salle in parent1.week[i][heure].keys():
+                    if i % 2 == 0:
+                        enfant1.week[i][heure][salle] = parent1.week[i][heure][salle]
+                        enfant2.week[i][heure][salle] = parent2.week[i][heure][salle]
+                    else :
+                        enfant1.week[i][heure][salle] = parent2.week[i][heure][salle]
+                        enfant2.week[i][heure][salle] = parent1.week[i][heure][salle]
+
+        eval1 = self.estimerSolution(enfant1)
+        eval2 = self.estimerSolution(enfant2)
+
+        if eval1 >= eval2:
+            return [enfant1, eval1]
+        else:
+            return [enfant2, eval2]
+
+
 
     def remplacementPopulation(self, enfant):
-        pass
+
+        self.population += enfant
+        sorted(self.population, key=itemgetter(1), reverse=True)
+        self.population = self.population[:self.taille]
 
     def reparerSolution(self, solution):
         pass
 
     def main(self):
+
         while self.nbEstimation < 100000:
+
             enfants = []
-            for i in range(ceil(self.tR*self.population)):
+            for i in range(ceil(self.tR*self.taille)):
                 parent1, parent2 = random.sample(self.population, 2)
                 enfant = self.reproduction(parent1[0], parent2[0])
                 if random.random() < self.tM:
-                    enfant = self.mutation(enfant)
+
+                    if self.best[1] is not None and enfant[1] > self.best[1]: # Au cas ou on veille muter une solution meilleure que celle actuelle
+                        self.best = enfant
+                    else:
+                        enfant = self.mutation(enfant[0])
                 enfants.append(enfant)
 
             self.remplacementPopulation(enfants)
+
+            sorted(self.population, key=itemgetter(1), reverse=True)
+            if self.best[0] is None or self.best[1] < self.population[0][1]:
+                self.best = self.population[0]
+
+        print(self.best[0].show())
+        print(self.best[1])

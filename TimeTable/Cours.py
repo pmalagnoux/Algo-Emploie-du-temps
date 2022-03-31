@@ -15,3 +15,9 @@ class Course:
         if self.classroom == other.classroom:
             return True
         return False
+
+    def __str__(self):
+        return self.course
+
+    def __repr__(self):
+        return self.course

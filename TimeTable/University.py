@@ -30,7 +30,7 @@ class University:
         self.createListeCours()
         self.graphCourses()
         self.timetable = Timetable(University.classrooms, self.ListeCours)
-        self.timetable.show()
+
 
     def studentInCourse(self):
         courses = {course: 0 for course in Student.courses}
@@ -42,7 +42,6 @@ class University:
     def createListeCours(self):
         self.ListeCours = []
         for course in Student.courses:
-            print(course)
             self.ListeCours.append(Course(course,random.choice(University.classrooms)))
 
     def graphCourses(self):
