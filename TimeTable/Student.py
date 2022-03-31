@@ -11,4 +11,4 @@ class Student:
     def __init__(self):
         self.id = Student.id
         Student.id += 1
-        self.courses = random.sample(Student.courses, 4)
+        
