@@ -185,7 +185,7 @@ class AlgoGenetique:
 
     def main(self):
 
-        while self.nbEstimation < 1000000:
+        while self.nbEstimation < 100000:
 
             enfants = []
             for i in range(ceil(self.tR*self.taille)):

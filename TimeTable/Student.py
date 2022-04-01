@@ -1,5 +1,3 @@
-import random
-
 
 class Student:
     id = 0

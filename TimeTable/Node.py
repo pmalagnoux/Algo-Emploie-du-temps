@@ -3,8 +3,7 @@ from numpy import zeros
 
 
 class Node:
-    def __init__(self, value, edt= {}, bestParent=None)
-                 bestCost=math.inf, parent=None, childrens=[]):
+    def __init__(self, value, edt= {}, bestParent=None, bestCost= math.inf, parent=None, childrens=[]):
         self.edt = edt
         self.value = value
         self.childrens = []  # On peut placer les cours

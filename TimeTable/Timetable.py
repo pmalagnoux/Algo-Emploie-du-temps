@@ -50,12 +50,3 @@ class Timetable:
         else:
             print("Trop de cours par rapport à l'edt")
 
-    """ Test template
-        for i in range(len(self.week)):
-            for heure in self.week[i].keys():
-                for salle in self.week[i][heure].keys():
-                    if self.week[i][heure][salle] is None:
-                        print(i, heure, salle, cours.course)
-                        self.week[i][heure][salle] = cours.course
-                        return
-    """
