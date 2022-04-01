@@ -1,6 +1,13 @@
 from Timetable import Timetable
 from University import University
-from AlgoGenetique import AlgoGenetique
+from Node import Node
+
+
+class AlgoArbre:
+    def __init__(self):
+        Node = Node(coursesLeftToPlace=Timetable.allCourses())
+        Node.printNode()
+
 
 u = University(100)
 
