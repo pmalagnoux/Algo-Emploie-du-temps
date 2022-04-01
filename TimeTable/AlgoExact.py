@@ -1,41 +1,64 @@
 
 from operator import itemgetter
 from Student import Student
+import numpy as np
+
+from University import University
+from Timetable import Timetable
+
 
 class AlgoExact:
 
     def __init__(self, universite):
         self.universite = universite
         self.edt = self.universite.timetable
-        self.backtracking(self.universite.ListeCours)
+        self.best = - np.inf
+        self.bestBacktracking()
         print(self.edt.show())
         print(self.estimerSolution(self.edt))
 
-    def backtracking(self, listeCoursAPlacer):
+    def bestBacktracking(self):
+
+        while True:
+            if not self.backtrackingFirstSolution(self.universite.ListeCours[:]):
+                return
+            x = self.checkAllCours(self.edt)
+            print(x, len(self.universite.ListeCours))
+            if x:
+                self.bestEdt = Timetable(University.classrooms, self.universite.ListeCours, self.edt.week[:])
+                self.best = self.estimerSolution(self.bestEdt)
+                self.edt.resetEdt()
+                self.bestEdt.show()
+                print(self.best)
+
+
+    def backtrackingFirstSolution(self, listeCoursAPlacer):
+        #print(len(listeCoursAPlacer))
         i, h, s = self.nextEmpty()
-        if len(listeCoursAPlacer) != 0 and i == -1:
-            self.makeFalseNoneAgain()
-            return False
-        if len(listeCoursAPlacer) == 0 or i == -1: # Si il n'y a plus de cours à placer ou si l'edt est plein
+
+
+        if len(listeCoursAPlacer) == 0: # Si il n'y a plus de cours à placer
             return True
+        if i == -1:
+            self.makeFalseNoneAgain()
+        else:
+            ListeEsti = []
+            for cours in listeCoursAPlacer: # On cherche le meilleur cours à placer à cet endroit
+                self.edt.week[i][h][s] = cours
+                ListeEsti.append([cours, self.estimerSolution(self.edt)])
+                self.edt.week[i][h][s] = None
 
-        ListeEsti = []
+            ListeEsti = sorted(ListeEsti, key=itemgetter(1), reverse=True) # On trie la liste pour les selectionner dans l'ordre
+            for cours, eval in ListeEsti:
 
-        for cours in listeCoursAPlacer: # On cherche le meilleur cours à placer à cet endroit
-            self.edt.week[i][h][s] = cours
-            ListeEsti.append([cours, self.estimerSolution(self.edt)])
-            self.edt.week[i][h][s] = None
-
-        sorted(ListeEsti, key=itemgetter(1), reverse=True) # On trie la liste pour les selectionner dans l'ordre
-        for cours, eval in ListeEsti:
-            self.edt.week[i][h][s] = cours
-            if self.isSolutionPossible(self.edt):
-                listeCoursAPlacer.remove(cours)
-                if self.backtracking(listeCoursAPlacer[:]):
-                    return True
-                listeCoursAPlacer.append(cours)
-            self.edt.week[i][h][s] = None
-        self.edt.week[i][h][s] = False
+                if eval > self.best:
+                    self.edt.week[i][h][s] = cours
+                    if self.isSolutionPossible(self.edt):
+                        listeCoursAPlacer.remove(cours)
+                        if self.backtrackingFirstSolution(listeCoursAPlacer[:]):
+                            return True
+                        listeCoursAPlacer.append(cours)
+            self.edt.week[i][h][s] = False
         return False
 
     def nextEmpty(self):
@@ -118,11 +141,22 @@ class AlgoExact:
                             return False
                 for salle in edt.week[i][heure].keys():
                     if edt.week[i][heure][salle] is not None and edt.week[i][heure][salle] is not False:
+
                         #### Respect des disponibilités des profs ####
                         if not AlgoExact.respectDispo(i, edt.week[i][heure][salle]):
                             return False
         return True
 
+    def checkAllCours(self, edt):
+        c = 0
+        for i in range(len(self.edt.week)):
+            for heure in self.edt.week[i].keys():
+                for salle in self.edt.week[i][heure].keys():
+                    if edt.week[i][heure][salle] is not None and edt.week[i][heure][salle] is not False:
+                        c += 1
+        if c != len(self.universite.ListeCours):
+            return False
+        return True
     @staticmethod
     def respectDispo(jour, cours):
         return cours.disponibilite[jour]

@@ -4,7 +4,8 @@ from AlgoExact import AlgoExact
 
 u = University(100)
 
-t = AlgoGenetique(150, 0.5, 0.8, u)
-t.main()
+#t = AlgoGenetique(150, 0.5, 0.8, u)
+#t.main()
+print("################################")
 x = AlgoExact(u)
 

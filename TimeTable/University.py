@@ -16,7 +16,7 @@ class University:
         self.nbStudent = nbStudent
         self.students = []
         for _ in range(self.nbStudent):
-            temp = random.randint(0,3)
+            temp = random.randint(0, 3)
             if temp == 0:
                 self.students.append(Info())
             elif temp == 1:

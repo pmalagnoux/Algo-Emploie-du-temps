@@ -3,12 +3,14 @@ import random
 class Timetable:
     day = 2
 
-    def __init__(self, classrooms, listeCours):
+
+    def __init__(self, classrooms, listeCours, week = None):
         self.classrooms = classrooms
         self.ListeCours = listeCours
-        self.week = [{i: {salle: None for salle in self.classrooms} for i in [8, 10, 14, 16]} for j in range(Timetable.day)]
-
-
+        if week is None:
+            self.week = [{i: {salle: None for salle in self.classrooms} for i in [8, 10, 14, 16]} for j in range(Timetable.day)]
+        else:
+            self.week = week
 
     def show(self):
         l1 = ""
@@ -40,13 +42,20 @@ class Timetable:
     def PlacerCours(self, cours):
 
         if Timetable.day * 4 * len(self.classrooms) >= len(self.ListeCours): #Permet de définir si on peut oui ou non placer tous les cours dans l'edt
-            while True:
-                i = random.randint(0, Timetable.day - 1)
+            count = 0
+            while True and count<10000:
+                count +=1
+                i = random.randrange(0, Timetable.day)
                 heure = random.choice(list(self.week[i].keys()))
                 salle = random.choice(list(self.week[i][heure].keys()))
                 if self.week[i][heure][salle] is None:
                     self.week[i][heure][salle] = cours
                     return
+            if count == 10000:
+                print("erreur dans le placement")
+
         else:
             print("Trop de cours par rapport à l'edt")
 
+    def resetEdt(self):
+        self.week = [{i: {salle: None for salle in self.classrooms} for i in [8, 10, 14, 16]} for j in range(Timetable.day)]

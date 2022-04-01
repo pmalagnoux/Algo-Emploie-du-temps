@@ -104,40 +104,57 @@ class AlgoGenetique:
 
     def reproductionAmeliore(self, parent1, parent2):
 
-        enfant1 = Timetable(University.classrooms, self.universite.ListeCours)
-        enfant2 = Timetable(University.classrooms, self.universite.ListeCours)
+            enfant1 = Timetable(University.classrooms, self.universite.ListeCours)
+            enfant2 = Timetable(University.classrooms, self.universite.ListeCours)
 
-        for i, cours in enumerate(self.universite.ListeCours):
-            i1, h1, s1 = self.chercherCour(cours, parent1)
-            i2, h2, s2 = self.chercherCour(cours, parent2)
-            if i % 2 == 0:
-                if enfant1.week[i1][h1][s1] is None:
-                    enfant1.week[i1][h1][s1] = cours
-                else:
-                    enfant1.week[i2][h2][s2] = cours
+            listeConflict1 = []
+            listeConflict2 = []
 
-                if enfant2.week[i2][h2][s2] is None:
-                    enfant2.week[i2][h2][s2] = cours
+            for i, cours in enumerate(self.universite.ListeCours):
+                i1, h1, s1 = self.chercherCour(cours, parent1)
+                i2, h2, s2 = self.chercherCour(cours, parent2)
+                if i % 2 == 0:
+                    if enfant1.week[i1][h1][s1] is None:
+                        enfant1.week[i1][h1][s1] = cours
+                    elif enfant1.week[i2][h2][s2] is None:
+                        enfant1.week[i2][h2][s2] = cours
+                    else:
+                        listeConflict1.append(cours)
+
+                    if enfant2.week[i2][h2][s2] is None:
+                        enfant2.week[i2][h2][s2] = cours
+                    elif enfant2.week[i1][h1][s1] is None:
+                        enfant2.week[i1][h1][s1] = cours
+                    else:
+                        listeConflict2.append(cours)
+
                 else:
-                    enfant1.week[i1][h1][s1] = cours
+                    if enfant1.week[i2][h2][s2] is None:
+                        enfant1.week[i2][h2][s2] = cours
+                    elif enfant1.week[i1][h1][s1] is None:
+                        enfant1.week[i1][h1][s1] = cours
+                    else:
+                        listeConflict1.append(cours)
+
+                    if enfant2.week[i1][h1][s1] is None:
+                        enfant2.week[i1][h1][s1] = cours
+                    elif enfant2.week[i2][h2][s2] is None:
+                        enfant2.week[i2][h2][s2] = cours
+                    else:
+                        listeConflict2.append(cours)
+
+            for cours in listeConflict1:
+                enfant1.PlacerCours(cours)
+            for cours in listeConflict2:
+                enfant2.PlacerCours(cours)
+
+            eval1 = self.estimerSolution(enfant1)
+            eval2 = self.estimerSolution(enfant2)
+
+            if eval1 >= eval2:
+                return [enfant1, eval1]
             else:
-                if enfant1.week[i2][h2][s2] is None:
-                    enfant1.week[i2][h2][s2] = cours
-                else:
-                    enfant1.week[i1][h1][s1] = cours
-
-                if enfant2.week[i1][h1][s1] is None:
-                    enfant2.week[i1][h1][s1] = cours
-                else:
-                    enfant1.week[i2][h2][s2] = cours
-
-        eval1 = self.estimerSolution(enfant1)
-        eval2 = self.estimerSolution(enfant2)
-
-        if eval1 >= eval2:
-            return [enfant1, eval1]
-        else:
-            return [enfant2, eval2]
+                return [enfant2, eval2]
 
 
     def chercherCour(self, cours, edt):
@@ -177,7 +194,7 @@ class AlgoGenetique:
     def remplacementPopulation(self, enfant):
 
         self.population += enfant
-        sorted(self.population, key=itemgetter(1), reverse=True)
+        self.population = sorted(self.population, key=itemgetter(1), reverse=True)
         self.population = self.population[:self.taille]
 
     def reparerSolution(self, solution):
@@ -185,7 +202,7 @@ class AlgoGenetique:
 
     def main(self):
 
-        while self.nbEstimation < 100000:
+        while self.nbEstimation < 10000:
 
             enfants = []
             for i in range(ceil(self.tR*self.taille)):
@@ -201,9 +218,8 @@ class AlgoGenetique:
 
             self.remplacementPopulation(enfants)
 
-            sorted(self.population, key=itemgetter(1), reverse=True)
+            self.population = sorted(self.population, key=itemgetter(1), reverse=True)
             if self.best[0] is None or self.best[1] < self.population[0][1]:
                 self.best = self.population[0]
-
-        print(self.best[0].show())
-        print(self.best[1])
+                self.best[0].show()
+                print(self.best[1])
