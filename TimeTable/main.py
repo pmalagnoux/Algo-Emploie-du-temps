@@ -4,5 +4,5 @@ from AlgoGenetique import AlgoGenetique
 
 u = University(100)
 
-t = AlgoGenetique(100, 0.5, 0.5, u)
+t = AlgoGenetique(150, 0.5, 0.8, u)
 t.main()

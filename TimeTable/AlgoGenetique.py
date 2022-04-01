@@ -102,12 +102,56 @@ class AlgoGenetique:
 
         return [solution, self.estimerSolution(solution)]
 
+    def reproductionAmeliore(self, parent1, parent2):
+
+        enfant1 = Timetable(University.classrooms, self.universite.ListeCours)
+        enfant2 = Timetable(University.classrooms, self.universite.ListeCours)
+
+        for i, cours in enumerate(self.universite.ListeCours):
+            i1, h1, s1 = self.chercherCour(cours, parent1)
+            i2, h2, s2 = self.chercherCour(cours, parent2)
+            if i % 2 == 0:
+                if enfant1.week[i1][h1][s1] is None:
+                    enfant1.week[i1][h1][s1] = cours
+                else:
+                    enfant1.week[i2][h2][s2] = cours
+
+                if enfant2.week[i2][h2][s2] is None:
+                    enfant2.week[i2][h2][s2] = cours
+                else:
+                    enfant1.week[i1][h1][s1] = cours
+            else:
+                if enfant1.week[i2][h2][s2] is None:
+                    enfant1.week[i2][h2][s2] = cours
+                else:
+                    enfant1.week[i1][h1][s1] = cours
+
+                if enfant2.week[i1][h1][s1] is None:
+                    enfant2.week[i1][h1][s1] = cours
+                else:
+                    enfant1.week[i2][h2][s2] = cours
+
+        eval1 = self.estimerSolution(enfant1)
+        eval2 = self.estimerSolution(enfant2)
+
+        if eval1 >= eval2:
+            return [enfant1, eval1]
+        else:
+            return [enfant2, eval2]
+
+
+    def chercherCour(self, cours, edt):
+        for i in range(len(edt.week)):
+            for heure in edt.week[i].keys():
+                for salle in edt.week[i][heure].keys():
+                    if edt.week[i][heure][salle] is not None and edt.week[i][heure][salle].course == cours.course:
+                        return i, heure, salle
+
+
 
 
     def reproduction(self, parent1, parent2):
-        # Faire la reproduction plutot avec la ListeCours et choisir parmis les 2 parents
-        # à laquelle position on le met si il y a un cours à un des endroits chez l'enfant
-        # on le met a la position de l'autre parent
+
         enfant1 = Timetable(University.classrooms, self.universite.ListeCours)
         enfant2 = Timetable(University.classrooms, self.universite.ListeCours)
         for i in range(len(parent1.week)):
@@ -141,12 +185,12 @@ class AlgoGenetique:
 
     def main(self):
 
-        while self.nbEstimation < 100000:
+        while self.nbEstimation < 1000000:
 
             enfants = []
             for i in range(ceil(self.tR*self.taille)):
                 parent1, parent2 = random.sample(self.population, 2)
-                enfant = self.reproduction(parent1[0], parent2[0])
+                enfant = self.reproductionAmeliore(parent1[0], parent2[0])
                 if random.random() < self.tM:
 
                     if self.best[1] is not None and enfant[1] > self.best[1]: # Au cas ou on veille muter une solution meilleure que celle actuelle

@@ -1,7 +1,7 @@
 import random
 
 class Timetable:
-    day = 3
+    day = 2
 
     def __init__(self, classrooms, listeCours):
         self.classrooms = classrooms
