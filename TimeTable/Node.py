@@ -1,14 +1,14 @@
 import math
 from numpy import zeros
+import Timetable
+import Student
 
 
 class Node:
-    def __init__(self, value, edt= {}, bestParent=None)
-                 bestCost=math.inf, parent=None, childrens=[]):
+    def __init__(self, value, edt= {}, bestParent=None, bestCost=math.inf, parent=None, childrens=[], coursesLeftToPlace):
         self.edt = edt
         self.value = value
         self.childrens = []  # On peut placer les cours
-        self.parent = parent
         self.edt = edt
         self.coursesLeftToPlace = coursesLeftToPlace
         self.bestParent = bestParent
@@ -25,16 +25,16 @@ class Node:
         if listeCoursMH == []: #Si plus aucun cours à placer
             return self.computeCost(listeCoursSemaine) # Retourner le cout
         for cours in listeCoursMH: # Parmis les cours à placer
-            self.childrens[i] = Node(coursesLeftToPlace=self.coursesLeftToPlace - courses, edt=self.edt.append(courses), parent=self.Node, value = estimerSolution(edt), bestCost=self.bestCost) # Créer un noeud childrens[i]
+            self.childrens[i] = Node(coursesLeftToPlace=self.coursesLeftToPlace - cours, edt=self.edt.append(cours), parent=self.Node, value = estimerSolution(edt), bestCost=self.bestCost) # Créer un noeud childrens[i]
             i+=1
             # Plus utile self.childrens.append(childNode) #TODO revoir
-            if childrens[i].bestCost <= self.bestCost: # New best score
+            if self.childrens[i].bestCost <= self.bestCost: # New best score
                 bestCost = self.childrens[i].bestCost
-                printnode(self) # Arbitraire/Debug à chaque fois qu'on a un noeud meilleur que le précédent on le print
-            self.childrends[0].bestCost = bestCost # Not sure
+                self.printnode() # Arbitraire/Debug à chaque fois qu'on a un noeud meilleur que le précédent on le print
+            self.childrens[0].bestCost = bestCost # Not sure
 
     def printnode(self):
-        print("Cout : " + score)
+        print("Cout : " + self.value)
         print("Emploi du temps : " + edt)
         print("##########################################################################################################")
 
