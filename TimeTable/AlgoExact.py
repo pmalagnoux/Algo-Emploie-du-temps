@@ -13,19 +13,18 @@ class AlgoExact:
         self.universite = universite
         self.edt = self.universite.timetable
         self.best = - np.inf
-        self.bestBacktracking()
-        print(self.edt.show())
-        print(self.estimerSolution(self.edt))
+        self.backtrackingAllSolution(self.universite.ListeCours.copy(), self.edt)
+        #print(self.edt.show())
+        #print(self.estimerSolution(self.edt))
 
     def bestBacktracking(self):
 
         while True:
-            if not self.backtrackingFirstSolution(self.universite.ListeCours[:]):
+            if not self.backtrackingFirstSolution(self.universite.ListeCours.copy()):
                 return
             x = self.checkAllCours(self.edt)
-            print(x, len(self.universite.ListeCours))
             if x:
-                self.bestEdt = Timetable(University.classrooms, self.universite.ListeCours, self.edt.week[:])
+                self.bestEdt = Timetable(University.classrooms, self.universite.ListeCours, self.edt.week.copy())
                 self.best = self.estimerSolution(self.bestEdt)
                 self.edt.resetEdt()
                 self.bestEdt.show()
@@ -33,12 +32,11 @@ class AlgoExact:
 
 
     def backtrackingFirstSolution(self, listeCoursAPlacer):
-        #print(len(listeCoursAPlacer))
+
         i, h, s = self.nextEmpty()
-
-
         if len(listeCoursAPlacer) == 0: # Si il n'y a plus de cours à placer
             return True
+
         if i == -1:
             self.makeFalseNoneAgain()
         else:
@@ -55,11 +53,35 @@ class AlgoExact:
                     self.edt.week[i][h][s] = cours
                     if self.isSolutionPossible(self.edt):
                         listeCoursAPlacer.remove(cours)
-                        if self.backtrackingFirstSolution(listeCoursAPlacer[:]):
+                        if self.backtrackingFirstSolution(listeCoursAPlacer.copy()):
                             return True
                         listeCoursAPlacer.append(cours)
             self.edt.week[i][h][s] = False
         return False
+
+    def backtrackingAllSolution(self, listeCoursAPlacer, edt):
+        i, h, s = self.nextEmpty()
+        if len(listeCoursAPlacer) == 0: # Si il n'y a plus de cours à placer
+            self.bestEdt = Timetable(University.classrooms, self.universite.ListeCours, edt.week.copy())
+            self.best = self.estimerSolution(self.bestEdt)
+            self.bestEdt.show()
+            print(self.best)
+            return True
+        if i == -1:
+            self.makeFalseNoneAgain()
+        else:
+            for cours in listeCoursAPlacer: # On cherche le meilleur cours à placer à cet endroit
+                edt.week[i][h][s] = cours
+                esti = self.estimerSolution(edt)
+                if esti > self.best and self.isSolutionPossible(edt):
+                    listeCoursAPlacer.remove(cours)
+                    if self.backtrackingAllSolution(listeCoursAPlacer.copy(), Timetable(University.classrooms,self.universite.ListeCours,edt.week.copy())):
+                        continue
+                    listeCoursAPlacer.append(cours)
+                self.edt.week[i][h][s] = None
+            self.edt.week[i][h][s] = False
+        return False
+
 
     def nextEmpty(self):
 
