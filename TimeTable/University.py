@@ -33,6 +33,10 @@ class University:
 
 
     def studentInCourse(self):
+        """
+        Retourne le nombre de participants à chaque cours
+        :return: dict {cours : nbEtudiantParticipant}
+        """
         courses = {course: 0 for course in Student.courses}
         for student in self.students:
             for course in student.courses:
@@ -40,11 +44,23 @@ class University:
         return courses
 
     def createListeCours(self):
+        """
+        Créer des cours avec des caractéristiques aléatoires à partir de la liste de cours
+        :return: list [Cours]
+        """
+
         self.ListeCours = []
         for course in Student.courses:
             self.ListeCours.append(Course(course,random.choice(University.classrooms)))
 
     def graphCourses(self):
+        """
+        Créé la matrice du graphe des interactions entre les cours.
+        Un nœud est un cours
+        Un lien correspond à un chiffre dans la matrice.
+        Ces liens servent à représenter les deux cours ont été choisi par un même étudiant
+        Le nombre correspond au nombre d'étudiants concernés
+        """
         listCourse = Student.courses
         self.graph = np.zeros((len(listCourse), len(listCourse)), dtype=int)
         for student in self.students:
@@ -53,4 +69,4 @@ class University:
                     self.graph[listCourse.index(student.courses[i])] [listCourse.index(student.courses[j])] += 1
                     self.graph[listCourse.index(student.courses[j])] [listCourse.index(student.courses[i])] += 1
         np.fill_diagonal(self.graph, 0)
-        print(self.graph) #print(np.array(self.graph > 0, dtype=int))
+        print(self.graph)

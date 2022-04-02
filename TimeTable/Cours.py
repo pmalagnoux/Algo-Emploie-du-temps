@@ -11,13 +11,6 @@ class Course:
             self.disponibilite[random.randint(0, Timetable.day-1)] = True
         #Critère abitraire pour ajouer du random à la génération
 
-
-
-    def isInSameClassroom(self, other):
-        if self.classroom == other.classroom:
-            return True
-        return False
-
     def __str__(self):
         return self.course
 

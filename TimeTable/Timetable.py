@@ -40,7 +40,10 @@ class Timetable:
 
 
     def PlacerCours(self, cours):
-
+        """
+        Place un cours de manière aléatoire parmis les cases vide de l'emploi du temps
+        :param cours : Cours
+        """
         if Timetable.day * 4 * len(self.classrooms) >= len(self.ListeCours): #Permet de définir si on peut oui ou non placer tous les cours dans l'edt
             count = 0
             while True and count<10000:
@@ -58,4 +61,7 @@ class Timetable:
             print("Trop de cours par rapport à l'edt")
 
     def resetEdt(self):
+        """
+        Réinitialise l'emploi du temps en un vide
+        """
         self.week = [{i: {salle: None for salle in self.classrooms} for i in [8, 10, 14, 16]} for j in range(Timetable.day)]
